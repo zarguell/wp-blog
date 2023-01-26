@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en-US" class="no-js">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="profile" href="https://gmpg.org/xfn/11">
+		<title>ZTNA to Services Through Cloudflare &#8211; Random Thoughts</title>
+<meta name="robots" content="max-image-preview:large">
+<link rel="alternate" type="application/rss+xml" title="Random Thoughts &raquo; Feed" href="/feed/">
+<script type="text/javascript">
+window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/14.0.0\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/14.0.0\/svg\/","svgExt":".svg","source":{"concatemoji":"\/wp-includes\/js\/wp-emoji-release.min.js?ver=6.1.1"}};
+/*! This file is auto-generated */
+!function(e,a,t){var n,r,o,i=a.createElement("canvas"),p=i.getContext&&i.getContext("2d");function s(e,t){var a=String.fromCharCode,e=(p.clearRect(0,0,i.width,i.height),p.fillText(a.apply(this,e),0,0),i.toDataURL());return p.clearRect(0,0,i.width,i.height),p.fillText(a.apply(this,t),0,0),e===i.toDataURL()}function c(e){var t=a.createElement("script");t.src=e,t.defer=t.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(t)}for(o=Array("flag","emoji"),t.supports={everything:!0,everythingExceptFlag:!0},r=0;r<o.length;r++)t.supports[o[r]]=function(e){if(p&&p.fillText)switch(p.textBaseline="top",p.font="600 32px Arial",e){case"flag":return s([127987,65039,8205,9895,65039],[127987,65039,8203,9895,65039])?!1:!s([55356,56826,55356,56819],[55356,56826,8203,55356,56819])&&!s([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]);case"emoji":return!s([129777,127995,8205,129778,127999],[129777,127995,8203,129778,127999])}return!1}(o[r]),t.supports.everything=t.supports.everything&&t.supports[o[r]],"flag"!==o[r]&&(t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&t.supports[o[r]]);t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&!t.supports.flag,t.DOMReady=!1,t.readyCallback=function(){t.DOMReady=!0},t.supports.everything||(n=function(){t.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",n,!1),e.addEventListener("load",n,!1)):(e.attachEvent("onload",n),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&t.readyCallback()})),(e=t.source||{}).concatemoji?c(e.concatemoji):e.wpemoji&&e.twemoji&&(c(e.twemoji),c(e.wpemoji)))}(window,document,window._wpemojiSettings);
+</script>
+<style type="text/css">img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 0.07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}</style>
+	<link rel="stylesheet" id="wp-block-library-css" href="/wp-includes/css/dist/block-library/style.min.css?ver=6.1.1" type="text/css" media="all">
+<link rel="stylesheet" id="classic-theme-styles-css" href="/wp-includes/css/classic-themes.min.css?ver=1" type="text/css" media="all">
+<style id="global-styles-inline-css" type="text/css">body{--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--color--retrogeek-background: #232323;--wp--preset--color--retrogeek-foreground: #00ff00;--wp--preset--color--retrogeek-link: #74f774;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--duotone--dark-grayscale: url('#wp-duotone-dark-grayscale');--wp--preset--duotone--grayscale: url('#wp-duotone-grayscale');--wp--preset--duotone--purple-yellow: url('#wp-duotone-purple-yellow');--wp--preset--duotone--blue-red: url('#wp-duotone-blue-red');--wp--preset--duotone--midnight: url('#wp-duotone-midnight');--wp--preset--duotone--magenta-yellow: url('#wp-duotone-magenta-yellow');--wp--preset--duotone--purple-green: url('#wp-duotone-purple-green');--wp--preset--duotone--blue-orange: url('#wp-duotone-blue-orange');--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;}:where(.is-layout-flex){gap: 0.5em;}body .is-layout-flow > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}body .is-layout-flow > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}body .is-layout-flow > .aligncenter{margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}body .is-layout-constrained > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}body .is-layout-constrained > .aligncenter{margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)){max-width: var(--wp--style--global--content-size);margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > .alignwide{max-width: var(--wp--style--global--wide-size);}body .is-layout-flex{display: flex;}body .is-layout-flex{flex-wrap: wrap;align-items: center;}body .is-layout-flex > *{margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+.wp-block-navigation a:where(:not(.wp-element-button)){color: inherit;}
+:where(.wp-block-columns.is-layout-flex){gap: 2em;}
+.wp-block-pullquote{font-size: 1.5em;line-height: 1.6;}</style>
+<link rel="stylesheet" id="retrogeek-normalize-css" href="/wp-content/themes/retrogeek/assets/css/normalize.css?ver=42" type="text/css" media="all">
+<link rel="stylesheet" id="retrogeek-skeleton-css" href="/wp-content/themes/retrogeek/assets/css/skeleton.css?ver=42" type="text/css" media="all">
+<style id="retrogeek-skeleton-inline-css" type="text/css">/* Customizer CSS */
+:root {
+--rg-text-color: #00ff00;
+--rg-link-text-color: #74f774;
+--rg-background-color: #232323;
+--rg-header-text-color: #00ff00;
+}
+/* /Customizer CSS */</style>
+<link rel="stylesheet" id="retrogeek-style-css" href="/wp-content/themes/retrogeek/style.css?ver=42" type="text/css" media="all">
+<link rel="https://api.w.org/" href="/wp-json/">
+<link rel="alternate" type="application/json" href="/wp-json/wp/v2/posts/7">
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="/wp-includes/wlwmanifest.xml">
+<meta name="generator" content="WordPress 6.1.1">
+<link rel="canonical" href="/2022/09/26/ztna-to-services-through-cloudflare/">
+<link rel="shortlink" href="/?p=7">
+<link rel="alternate" type="application/json+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2F2022%2F09%2F26%2Fztna-to-services-through-cloudflare%2F">
+<link rel="alternate" type="text/xml+oembed" href="/wp-json/oembed/1.0/embed?url=https%3A%2F%2F%2F2022%2F09%2F26%2Fztna-to-services-through-cloudflare%2F#038;format=xml">
+<link rel="icon" href="/wp-content/uploads/2023/01/cropped-android-chrome-512x512-1-32x32.png" sizes="32x32">
+<link rel="icon" href="/wp-content/uploads/2023/01/cropped-android-chrome-512x512-1-192x192.png" sizes="192x192">
+<link rel="apple-touch-icon" href="/wp-content/uploads/2023/01/cropped-android-chrome-512x512-1-180x180.png">
+<meta name="msapplication-TileImage" content="/wp-content/uploads/2023/01/cropped-android-chrome-512x512-1-270x270.png">
+</head>
+
+<body class="post-template-default single single-post postid-7 single-format-standard">
+<svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-dark-grayscale"><fecolormatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></fecolormatrix><fecomponenttransfer color-interpolation-filters="sRGB"><fefuncr type="table" tablevalues="0 0.49803921568627"></fefuncr><fefuncg type="table" tablevalues="0 0.49803921568627"></fefuncg><fefuncb type="table" tablevalues="0 0.49803921568627"></fefuncb><fefunca type="table" tablevalues="1 1"></fefunca></fecomponenttransfer><fecomposite in2="SourceGraphic" operator="in"></fecomposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-grayscale"><fecolormatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></fecolormatrix><fecomponenttransfer color-interpolation-filters="sRGB"><fefuncr type="table" tablevalues="0 1"></fefuncr><fefuncg type="table" tablevalues="0 1"></fefuncg><fefuncb type="table" tablevalues="0 1"></fefuncb><fefunca type="table" tablevalues="1 1"></fefunca></fecomponenttransfer><fecomposite in2="SourceGraphic" operator="in"></fecomposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-purple-yellow"><fecolormatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></fecolormatrix><fecomponenttransfer color-interpolation-filters="sRGB"><fefuncr type="table" tablevalues="0.54901960784314 0.98823529411765"></fefuncr><fefuncg type="table" tablevalues="0 1"></fefuncg><fefuncb type="table" tablevalues="0.71764705882353 0.25490196078431"></fefuncb><fefunca type="table" tablevalues="1 1"></fefunca></fecomponenttransfer><fecomposite in2="SourceGraphic" operator="in"></fecomposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-blue-red"><fecolormatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></fecolormatrix><fecomponenttransfer color-interpolation-filters="sRGB"><fefuncr type="table" tablevalues="0 1"></fefuncr><fefuncg type="table" tablevalues="0 0.27843137254902"></fefuncg><fefuncb type="table" tablevalues="0.5921568627451 0.27843137254902"></fefuncb><fefunca type="table" tablevalues="1 1"></fefunca></fecomponenttransfer><fecomposite in2="SourceGraphic" operator="in"></fecomposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-midnight"><fecolormatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></fecolormatrix><fecomponenttransfer color-interpolation-filters="sRGB"><fefuncr type="table" tablevalues="0 0"></fefuncr><fefuncg type="table" tablevalues="0 0.64705882352941"></fefuncg><fefuncb type="table" tablevalues="0 1"></fefuncb><fefunca type="table" tablevalues="1 1"></fefunca></fecomponenttransfer><fecomposite in2="SourceGraphic" operator="in"></fecomposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-magenta-yellow"><fecolormatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></fecolormatrix><fecomponenttransfer color-interpolation-filters="sRGB"><fefuncr type="table" tablevalues="0.78039215686275 1"></fefuncr><fefuncg type="table" tablevalues="0 0.94901960784314"></fefuncg><fefuncb type="table" tablevalues="0.35294117647059 0.47058823529412"></fefuncb><fefunca type="table" tablevalues="1 1"></fefunca></fecomponenttransfer><fecomposite in2="SourceGraphic" operator="in"></fecomposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-purple-green"><fecolormatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></fecolormatrix><fecomponenttransfer color-interpolation-filters="sRGB"><fefuncr type="table" tablevalues="0.65098039215686 0.40392156862745"></fefuncr><fefuncg type="table" tablevalues="0 1"></fefuncg><fefuncb type="table" tablevalues="0.44705882352941 0.4"></fefuncb><fefunca type="table" tablevalues="1 1"></fefunca></fecomponenttransfer><fecomposite in2="SourceGraphic" operator="in"></fecomposite></filter></defs></svg><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 0 0" width="0" height="0" focusable="false" role="none" style="visibility: hidden; position: absolute; left: -9999px; overflow: hidden;"><defs><filter id="wp-duotone-blue-orange"><fecolormatrix color-interpolation-filters="sRGB" type="matrix" values=" .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 "></fecolormatrix><fecomponenttransfer color-interpolation-filters="sRGB"><fefuncr type="table" tablevalues="0.098039215686275 1"></fefuncr><fefuncg type="table" tablevalues="0 0.66274509803922"></fefuncg><fefuncb type="table" tablevalues="0.84705882352941 0.41960784313725"></fefuncb><fefunca type="table" tablevalues="1 1"></fefunca></fecomponenttransfer><fecomposite in2="SourceGraphic" operator="in"></fecomposite></filter></defs></svg><div id="page" class="hfeed site">
+
+	<header id="masthead" class="site-header">
+
+	<!-- columns should be the immediate child of a .row -->
+	<div class="row">
+		<div class="two columns">&nbsp;</div>
+		<div class="eight columns">
+		<a class="screen-reader-text skip-link" href="#content">Skip to content</a>
+		<!-- Mobile Top-Menubar -->
+		<div class="toggle-topnav-div"><a class="toggle-topnav" href="#" onclick="retrogeek_toggle_mobile_menu();">&#9776;</a></div>
+		<nav class="topnav">
+				</nav>
+
+			<div class="site-branding">
+
+				<div id="asciiartlogo" class="u-pull-left three columns" style="padding-right: 20px;">
+					<a style="text-decoration:none !important;" href="/" rel="home">
+				<div><pre>    .--.
+   |o_o |
+   |:_/ |
+  //   \ \
+ (|     | )
+/&#039;\_   _/`\
+\___)=(___/</pre></div>					</a>
+				</div>
+
+				<div class="u-pull-left">
+					<!-- mobile site title -->
+					<h1 class="site-title-mob">
+						<a style="text-decoration:none !important;" href="/" rel="home">
+							Random Thoughts						</a>
+					</h1>
+
+				
+					<!-- Site title as ASCII or Text --><div class="site-title"><a style="text-decoration:none !important;" href="/" rel="home"><h1>Random Thoughts</h1></a></div>				</div>
+				</div> <!-- site-branding -->
+				<div class="u-cf"></div>
+
+								
+				<!-- Menubar -->
+				<nav class="nav">
+								</nav>
+
+		</div>
+<!-- eight columns -->
+	</div> <!-- row -->
+</header><!-- .site-header -->
+
+	<div id="content" class="site-content">
+
+<main id="main" class="site-main">
+	<div class="row">
+	<div class="two columns">&nbsp;</div>
+	<div id="primary" class="eight columns">
+
+
+
+	<article class="content-area">
+				<div id="post1-7" class="post-7 post type-post status-publish format-standard hentry category-selfhosted tag-cloudflare tag-homelab tag-sase tag-trust tag-warp tag-zero tag-ztna">
+
+				
+			<div class="entry-right">
+				<header class="entry-header">
+					<h5 class="entry-title" id="post-7"><a href="/2022/09/26/ztna-to-services-through-cloudflare/" rel="bookmark">ZTNA to Services Through Cloudflare</a></h5>
+				</header>
+
+				
+				<div class="metadata">
+					
+						
+<p><strong>## Overview 🔍</strong></p>
+
+
+
+<p>If vendor marketing is any indication, &#8220;Zero Trust&#8221; is the biggest buzzword in security lately. But not without reason; a well implemented security architecture with strong identity verification and zero trust principles is the foundation of good security today. It&#8217;s amsuing to me how many breaches in the past few months reported in the news have had the same things; valid account, compromise of phishable 2-factor credentials, compromise of enterprise VPN, establish foothold, move laterally.</p>
+
+
+
+<p>As Cloudflare tags their practice of [&#8220;dogfooding&#8221;](https://blog.cloudflare.com/dogfooding-from-home/) Cloudflare Access, for me &#8220;dogfooding&#8221; is using Cloudflare Acccess to adopt a zero trust approach to my self hosted services. For a while, I have been using Cloudflare Tunnels (formerly known as Argo Tunnels) with identity providers as sort-of a &#8220;front line&#8221; identity verification to services. This is cool and all, but it doesn&#8217;t fully automate the identification process, and breaks a lot of &#8220;app&#8221; functionality. For example, built in functionality of Home Assistant or Bitwarden breaks, due to Cloudflare access prompting for authentication. Plus, it opens the door to a further enhanced security model (device posture checks, malware inspection, step up authentication, and more).</p>
+
+
+
+<p>In this post, I&#8217;ll assume you already have [Cloudflare for Teams](https://blog.cloudflare.com/introducing-cloudflare-for-teams/), with apps configured with public hostnames configured via Cloudflare Tunnels (and perhaps some policies to govern access already). What I want to highlight is the addition of &#8220;gateway&#8221; access by configuration of managed devices within a team/organization through the &#8220;Warp&#8221; client.</p>
+
+
+
+<p><strong>## Initial Setup 👷</strong></p>
+
+
+
+<p>In order to confgiure apps for ZTNA access through the Warp client, you will need clients to utilize Cloudflare&#8217;s Secure Web Gateway (SWG). For more information on developing Gateway Policies, see the [Cloudflare Docs](https://developers.cloudflare.com/cloudflare-one/policies/filtering/).</p>
+
+
+
+<p>The important part here is not necessarily on what Gateway Policies you implement, but that the Cloudflare SWG must be able to inspect HTTP traffic (ie, DNS inspection through forwarding from a defined location is NOT engough), which [requires the WARP client, with trusted certificate](https://developers.cloudflare.com/cloudflare-one/policies/filtering/initial-setup/http/).</p>
+
+
+
+<p>Prior to enrolling device, I would recommend configuring a basic device enrollment policy for the WARP client. This is found under &#8220;`Settings -&gt; WARP Client -&gt; Device Enrollment Permissions&#8220;`</p>
+
+
+
+<p>Similar to access policies, the enrollment policy defines what devices can enroll in your Cloudflare team. Below is a &#8220;family members&#8221; policy for which I included a list of list of authorized family member emails. In an enterprise scenario, this could be something more aligned to organization policies, such as &#8220;allow all *@acme.organization.com.&#8221;</p>
+
+
+
+<p>![device-policy](/assets/img/device-enrollment-policy.png)</p>
+
+
+
+<p>You will also want to configure a device posture check under &#8220;`Settings -&gt; WARP Client -&gt; Device Posture&#8220;`. For my scenario, I have configured the [&#8220;Require Gateway&#8221;](https://developers.cloudflare.com/cloudflare-one/identity/devices/warp-client-checks/require-gateway/) check. Per Cloudflare, &#8220;Require Gateway will only allow requests coming from devices whose traffic is filtered by your organization’s Cloudflare Gateway configuration. This policy is best used when you want to protect company-owned assets by only allowing access to employees&#8221; &#8211; exactly what we desire to enable ZTNA.</p>
+
+
+
+<p>![device-posture](/assets/img/device-posture.png)</p>
+
+
+
+<p>Note that device posture checks open up a door to enhance security; allowing more granular access to services based on risk, including enforcing a certain (up-to-date) OS version, precense of security controls, and more.</p>
+
+
+
+<p><strong>## Certificate Trust 🤝</strong></p>
+
+
+
+<p>Next in the setup process, you will need to add the Cloudflare for Teams certificate as a trusted root certificate in the device you are enrolling for access. Cloudflare provides standard .crt and .pem files in the docs linked [here](https://developers.cloudflare.com/cloudflare-one/connections/connect-devices/warp/install-cloudflare-cert), and should be installed as instructed per device vendor.</p>
+
+
+
+<p>Installation of this certificate is necessary to allow for HTTP inspection. Platforms such as Android may provide warning that installation of a certificate will allow third parties to view private data sent to websites. This is true &#8211; Cloudflare SWG, when performing HTTP inspection, is an &#8220;adversary-in-the-middle&#8221; for all HTTP requests on the client. In our scenario, this is desirable, as it is only through HTTP inspection that we can direct apps to private gateway access, as well as enforce DLP controls, malware inspection, lockdown allowed tenants, and more.</p>
+
+
+
+<p><strong>## Certificate Pinning 📌</strong></p>
+
+
+
+<p>For those familiar with TLS interception, whether through transparent proxy, or SWG platform &#8211; these issues are nothing new. But I believe it is worth pointing on the &#8220;issue&#8221; that TLS interception, and the introduction of &#8220;adversary-in-the-middle&#8221; has on various services, particularly client applications.</p>
+
+
+
+<p>One of the biggest hurdles to properly implementing TLS/HTTP inspection across the board is the wide usage of certificate pinning through various vendors. For large detail on the pros/cons of certificate pinning, I recommend checking out this [Digicert article](https://www.digicert.com/blog/certificate-pinning-what-is-certificate-pinning) on the topic &#8211; but the TLDR for this scenario is that certificate pinned applictaions indicate a scenario in which, in some shape or form, an application developer has forced their app to be &#8220;pinned&#8221; to a particular certificate of theirs. When using WARP gateway, or any TLS interception scenario, the previously trusted certificate inspecting the traffic will be presented. This will completely break app functionality, as the backend will be met with &#8220;certificate not trusted&#8221;, or similar errors. Even though the intercepting certificate is trusted at the system level, the certificate pinning of the app ignores this trust.</p>
+
+
+
+<p>Luckily, Cloudflare provides a simple &#8220;one-click&#8221; button. When onboarding on Teams, the first &#8220;create HTTP&#8221; policy that is pre-templated is a &#8220;certificate pinning&#8221; policy (pictured below).</p>
+
+
+
+<p>![cert-pinning](/assets/img/cert-pinning.png)</p>
+
+
+
+<p>The policy defines a list of applications correlating to domains known to cause issue with cert pinning, and defines a policy to bypass, or not inspect the traffic. Implementing this HTTP policy will resolve most common certificate pinning issues. I saw most &#8211; because it is not an end-to-end list. As you utilizing the gateway &#8211; you will notice normal traffic breaking, often due to certificate pinning. By observing logs and testing bypass of domains, you can walkthrough and remediate some of these issues.</p>
+
+
+
+<p><strong>## Device Enrollment 📱</strong></p>
+
+
+
+<p>Now that you&#8217;ve trusted the Cloudflare teams certificate, and understand and have bypassed the requisite apps for certificate pinning, you are ready to enroll the client and begin passing HTTP traffic through Cloudflare gateway.</p>
+
+
+
+<p>For small homelab usage, I&#8217;m going to assume you&#8217;re running manual deployments of the WARP client (although instructions for deploying via Intune, JAMF, etc exist. And I would love to develop a procedure for managed deployment of an organization WARP client through JumpCloud free tier&#8230; but that is a topic for another post&#8230;)</p>
+
+
+
+<p>The Cloudflare Docs for [manual installation](https://developers.cloudflare.com/cloudflare-one/connections/connect-devices/warp/deployment/manual-deployment/) describe the process; either CLI or GUI based per platform. Ultimately, the WARP client will need to be configured to use the &#8220;Cloudflare for Teams&#8221; login, and you will authenticate to meet the defined device enrollment criteria via configured identity providers, and be granted access to the Cloudflare team via WARP.</p>
+
+
+
+<p><strong>## Policy Configuration 🥂</strong></p>
+
+
+
+<p>So you have your device enrolled, and you&#8217;re inspecting HTTP traffic through the gateway. The final step is enable the &#8220;requirement&#8221; of the gateway to an access application, and use that as a condition to bypass authentication.</p>
+
+
+
+<p>For this scenario, I have added a policy &#8220;bypass authentication through gateway&#8221; for my bitwarden (vaultwarden) Access application.</p>
+
+
+
+<p>![bitwarden-bypass](/assets/img/bitwarden-bypass.png)</p>
+
+
+
+<p>Within the policy, the only condition I have is the &#8220;require gateway&#8221;, which was defined under WARP Client device posture checks in the initial setup. Again, depending on risk level, additional device posture checks could be enforced as need, so that even a &#8220;managed&#8221; device could be denied access to bitwarden if not up to patching, missing antivirus, etc.</p>
+
+
+
+<p>![require-gateway](/assets/img/require-gateway.png)</p>
+
+
+
+<p>After saving the policy &#8211; try testing out access. For the Bitwarden scenario, I changed my hostname from an internal DNS name to my public access domain (previously behind an authentication layer). Now, I can sync the Bitwarden app whenever, creating a software defined perimter for access to any of my self hosted services!</p>
+						<div class="clearfix"></div>
+													<hr>
+														<p><span class="linkcat">Filed under:  <a href="/category/selfhosted/" rel="category tag">selfhosted</a> </span> -  @ September 26, 2022 2:59 am </p>
+							<p class="taglink">Tags: <a href="/tag/cloudflare/" rel="tag">cloudflare</a>, <a href="/tag/homelab/" rel="tag">homelab</a>, <a href="/tag/sase/" rel="tag">sase</a>, <a href="/tag/trust/" rel="tag">trust</a>, <a href="/tag/warp/" rel="tag">warp</a>, <a href="/tag/zero/" rel="tag">zero</a>, <a href="/tag/ztna/" rel="tag">ztna</a></p>
+													
+									</div>
+			</div> <!-- entry-right -->
+
+			<div class="u-cf"></div>
+
+		</div> <!-- post1 -->
+						<div class="article-footer"><hr></div>
+	</article>
+	</div>
+<!-- eight columns -->
+	</div>
+<!-- row -->
+
+	<div class="row">
+	<div class="two columns">&nbsp;</div>
+	<div id="pagenav" class="eight columns">
+		</div>
+<!-- eight columns -->
+	</div>
+<!-- row -->
+
+</main><!-- .site-main -->
+
+</div>
+<!-- .site-content -->
+
+<footer id="colophon" class="site-footer">
+	<div class="row">
+		<div class="two columns">&nbsp;</div>
+		<div class="eight columns">
+			<div class="footer-widgets">
+							<div id="footer-widgets_left" class="widget-area" role="complementary">
+					<div><div class="is-layout-flow wp-block-group"><div class="wp-block-group__inner-container">
+<h2>Archives</h2>
+<ul class=" wp-block-archives-list wp-block-archives">	<li><a href="/2022/11/">November 2022</a></li>
+	<li><a href="/2022/09/">September 2022</a></li>
+</ul>
+</div></div></div>
+<div><div class="is-layout-flow wp-block-group"><div class="wp-block-group__inner-container">
+<h2>Categories</h2>
+<ul class="wp-block-categories-list wp-block-categories">	<li class="cat-item cat-item-9">
+<a href="/category/selfhosted/">selfhosted</a>
+</li>
+</ul>
+</div></div></div>				</div>
+<!-- #primary-sidebar -->
+			
+			
+							<div id="footer-widgets_right" class="widget-area" role="complementary">
+					<div><form role="search" method="get" action="https://wordpress.local.arguelles.me/" class="wp-block-search__button-outside wp-block-search__text-button wp-block-search">
+<label for="wp-block-search__input-3" class="wp-block-search__label">Search</label><div class="wp-block-search__inside-wrapper ">
+<input type="search" id="wp-block-search__input-3" class="wp-block-search__input wp-block-search__input" name="s" value="" placeholder="" required><button type="submit" class="wp-block-search__button wp-element-button">Search</button>
+</div>
+</form></div>
+<div><div class="is-layout-flow wp-block-group"><div class="wp-block-group__inner-container">
+<h2>Recent Posts</h2>
+<ul class="wp-block-latest-posts__list wp-block-latest-posts">
+<li><a class="wp-block-latest-posts__post-title" href="/2022/11/24/monitoring-speedtest-results-through-influxdb-on-openwrt/">Monitoring Speedtest Results through InfluxDB on OpenWrt</a></li>
+<li><a class="wp-block-latest-posts__post-title" href="/2022/09/26/ztna-to-services-through-cloudflare/">ZTNA to Services Through Cloudflare</a></li>
+</ul>
+</div></div></div>
+<div><div class="is-layout-flow wp-block-group"><div class="wp-block-group__inner-container">
+<h2>Recent Comments</h2>
+<div class="no-comments wp-block-latest-comments">No comments to show.</div>
+</div></div></div>				</div>
+<!-- #primary-sidebar -->
+						<div class="u-cf">&nbsp;</div>
+			</div>
+
+			<div class="site-info">
+
+						<a href="https://wordpress.org/" class="imprint">
+				Proudly powered by WordPress and RetroGeek-Theme			</a>
+			</div>
+<!-- .site-info -->
+		</div>
+<!-- eight columns -->
+	</div>
+<!-- row -->
+</footer><!-- .site-footer -->
+
+</div>
+<!-- .site -->
+
+<script type="text/javascript" src="/wp-content/themes/retrogeek/assets/js/retrogeek_func.js?ver=42" id="retrogeek-javascript-js"></script>
+
+</body>
+</html>

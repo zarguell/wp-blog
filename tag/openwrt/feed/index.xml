@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>openwrt &#8211; Random Thoughts</title>
+	<atom:link href="/tag/openwrt/feed/" rel="self" type="application/rss+xml" />
+	<link>/</link>
+	<description></description>
+	<lastBuildDate>Thu, 26 Jan 2023 03:03:08 +0000</lastBuildDate>
+	<language>en-US</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.1.1</generator>
+
+<image>
+	<url>/wp-content/uploads/2023/01/cropped-android-chrome-512x512-1-32x32.png</url>
+	<title>openwrt &#8211; Random Thoughts</title>
+	<link>/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>Monitoring Speedtest Results through InfluxDB on OpenWrt</title>
+		<link>/2022/11/24/monitoring-speedtest-results-through-influxdb-on-openwrt/</link>
+		
+		<dc:creator><![CDATA[zach]]></dc:creator>
+		<pubDate>Thu, 24 Nov 2022 03:01:00 +0000</pubDate>
+				<category><![CDATA[selfhosted]]></category>
+		<category><![CDATA[homelab]]></category>
+		<category><![CDATA[influxdb]]></category>
+		<category><![CDATA[monitoring]]></category>
+		<category><![CDATA[openwrt]]></category>
+		<category><![CDATA[speedtest]]></category>
+		<guid isPermaLink="false">/?p=10</guid>
+
+					<description><![CDATA[# Intro 💡 This Thanksgiving, I was at my Mom’s and wanted to tackle a lightweight monitoring solution for tracking various Speedtest.net metrics. Having recently moved and changed ISPs &#8211; she had experienced particular issues in having multiple outages on a daily basis, throughput issues, and the like. To help with this, the first thing [&#8230;]]]></description>
+										<content:encoded><![CDATA[
+<p><strong># Intro <img src="https://s.w.org/images/core/emoji/14.0.0/72x72/1f4a1.png" alt="💡" class="wp-smiley" style="height: 1em; max-height: 1em;" /></strong></p>
+
+
+
+<p>This Thanksgiving, I was at my Mom’s and wanted to tackle a lightweight monitoring solution for tracking various Speedtest.net metrics. Having recently moved and changed ISPs &#8211; she had experienced particular issues in having multiple outages on a daily basis, throughput issues, and the like.</p>
+
+
+
+<p>To help with this, the first thing I did was configure a Raspberry Pi Compute Module 4 with the DFRobot IOT Router Board to act as router, gateway, firewall, dns, etc &#8211; and just move her consumer Orbi to just Access Point mode. This is a great little board perfect for lightweight routing &#8211; Jeff Geerling has a [great write up on the board](https://www.jeffgeerling.com/blog/2021/two-tiny-dual-gigabit-raspberry-pi-cm4-routers) and I would highly recommend replacing your off-the-shelf router with one if you can get your hands on a Compute Module board.</p>
+
+
+
+<p>On top of this, I wanted a keep-it-simple-stupid monitoring solution: one that’s lightweight, not full of countless dependencies, as deploying it as my Mom’s, I would prefer a “set and forget” solution rather than one requiring constant maintenance (I’m extremely paranoid to the point of a failed SD card rendering the box non-functional &#8211; so I really don’t want a lot running on the box).</p>
+
+
+
+<p>InfluxDB Cloud has a great free tier that can maintain logs for 30 days that’s perfect for these small use cases. This is ideal, not having to host my own dedicated InfluxDB stack just for monitoring &#8211; I can just scrape and send a few metrics from the box.</p>
+
+
+
+<p><strong># Speedtest CLI Configuration <img src="https://s.w.org/images/core/emoji/14.0.0/72x72/1f684.png" alt="🚄" class="wp-smiley" style="height: 1em; max-height: 1em;" /></strong></p>
+
+
+
+<p>Speedtest CLI now has precompiled binaries that are statically linked, and can be run on OpenWrt out of the box &#8211; so this is much more ideal than running the Python based CLI, which is less performant and requires a whole stack of dependencies. And luckily, it’s compiled for aarch64, so it works perfectly with the Raspberry Pi Compute Module 4 (luckily, because unfortunately Speedtest has some “secret sauce”, and cannot open source the tool for your own compilation).</p>
+
+
+
+<p>Installation is straightforward, download the tarball from Speedtest and untar. I just leave it in /root as I persist this directory for Openwrt &#8211; but it can also be added to standard /bin directories:</p>
+
+
+
+<p>&#8220;`bash</p>
+
+
+
+<p>wget https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-linux-aarch64.tgz</p>
+
+
+
+<p>tar xvzf ookla-speedtest-1.2.0-linux-aarch64.tgz</p>
+
+
+
+<p>&#8220;`</p>
+
+
+
+<p>Once you have the binary, run the Speedtest CLI and follow the prompts:</p>
+
+
+
+<p>&#8220;`bash</p>
+
+
+
+<p>./speedtest</p>
+
+
+
+<p>==============================================================================</p>
+
+
+
+<p>You may only use this Speedtest software and information generated</p>
+
+
+
+<p>from it for personal, non-commercial use, through a command line</p>
+
+
+
+<p>interface on a personal computer. Your use of this software is subject</p>
+
+
+
+<p>to the End User License Agreement, Terms of Use and Privacy Policy at</p>
+
+
+
+<p>these URLs:</p>
+
+
+
+<p><a href="https://www.speedtest.net/about/eula">https://www.speedtest.net/about/eula</a></p>
+
+
+
+<p><a href="https://www.speedtest.net/about/terms">https://www.speedtest.net/about/terms</a></p>
+
+
+
+<p><a href="https://www.speedtest.net/about/privacy">https://www.speedtest.net/about/privacy</a></p>
+
+
+
+<p>==============================================================================</p>
+
+
+
+<p>Do you accept the license? [type YES to accept]: YES</p>
+
+
+
+<p>&#8220;`</p>
+
+
+
+<p>First usage of the tool will require you to interactively accept the EULA &#8211; after that, the record is stored in your user profile and the CLI can be run without interaction.</p>
+
+
+
+<p>To run the tool, I decided to use the .csv output format, because it is extremely easy to parse into InfluxDB, which I will dive into:</p>
+
+
+
+<p>&#8220;`bash</p>
+
+
+
+<p>./speedtest -f csv</p>
+
+
+
+<p>&#8220;`</p>
+
+
+
+<p><strong># InfluxDB Implementation <img src="https://s.w.org/images/core/emoji/14.0.0/72x72/1f4c8.png" alt="📈" class="wp-smiley" style="height: 1em; max-height: 1em;" /></strong></p>
+
+
+
+<p>Similarly to Speedtest, InfluxDB can also be installed as a single binary. For the Compute Module 4, grab the arm64 binary, and also untar just the same:</p>
+
+
+
+<p>&#8220;`bash</p>
+
+
+
+<p>wget https://dl.influxdata.com/influxdb/releases/influxdb2-client-2.5.0-linux-arm64.tar.gz</p>
+
+
+
+<p>tar xvzf influxdb2-client-2.5.0-linux-arm64.tar.gz</p>
+
+
+
+<p>&#8220;`</p>
+
+
+
+<p>Once you have the binary, you need to create an API token, and create a InfluxDB configuration. The easiest way to do this is walked through within the InfluxDB onboarding docs, which will do the work of creating an API token and providing the configuration command like so:</p>
+
+
+
+<p>&#8220;`bash</p>
+
+
+
+<p>./influx config create &#8211;config-name onboarding \</p>
+
+
+
+<p>&#8211;host-url &#8220;https://your-platform-url&/#8221; \</p>
+
+
+
+<p>&#8211;org &#8220;your-org&#8221; \</p>
+
+
+
+<p>&#8211;token &#8220;api-token&#8221; \</p>
+
+
+
+<p>&#8211;active</p>
+
+
+
+<p>&#8220;`</p>
+
+
+
+<p>Once you have configured the profile, you can verify the configuration by listing profiles:</p>
+
+
+
+<p>&#8220;`bash</p>
+
+
+
+<p>./influx config</p>
+
+
+
+<p>Active Name URL Org</p>
+
+
+
+<p>* onboarding https://your-platform-url/ your-org</p>
+
+
+
+<p>&#8220;`</p>
+
+
+
+<p>To collect data to InfluxDB, we will create a bucket called speedtest to send speedtest data to:</p>
+
+
+
+<p>&#8220;`bash</p>
+
+
+
+<p>influx bucket create \</p>
+
+
+
+<p>&#8211;name speedtest \</p>
+
+
+
+<p>&#8211;description &#8220;OpenWrt Speedtest.net Bucket&#8221;</p>
+
+
+
+<p>&#8220;`</p>
+
+
+
+<p>With the bucket created, we can begin sending the csv data to the bucket. InfluxDB can utilize an annotated csv format in order to capture tags, measurements, and datatypes that should be indexed by InfluxDB.</p>
+
+
+
+<p>So, we need to figure out how the Speedtest csv data should be annotated to properly index. To get this, I ran the csv output with header information, and mapped each field to the InfluxDB data types as so:</p>
+
+
+
+<p>&#8220;`</p>
+
+
+
+<p>#constant measurement,speed</p>
+
+
+
+<p>#datatype tag,tag,double,double,double,long,long,long,long,tag,long,double,double,double,double,double,double,double,double,double,double</p>
+
+
+
+<p>&#8220;server name&#8221;,&#8221;server id&#8221;,&#8221;idle latency&#8221;,&#8221;idle jitter&#8221;,&#8221;packet loss&#8221;,&#8221;download&#8221;,&#8221;upload&#8221;,&#8221;download bytes&#8221;,&#8221;upload bytes&#8221;,&#8221;share url&#8221;,&#8221;download server count&#8221;,&#8221;download latency&#8221;,&#8221;download latency jitter&#8221;,&#8221;download latency low&#8221;,&#8221;download latency high&#8221;,&#8221;upload latency&#8221;,&#8221;upload latency jitter&#8221;,&#8221;upload latency low&#8221;,&#8221;upload latency high&#8221;,&#8221;idle latency low&#8221;,&#8221;idle latency high&#8221;</p>
+
+
+
+<p>&#8220;`</p>
+
+
+
+<p>The secret sauce here is basically:</p>
+
+
+
+<p>&#8211; Line 1: Set a constant measurement for all data to be called speed</p>
+
+
+
+<p>&#8211; Line 2: Define each csv column header as the data type (longs and doubles where decimal). For the server related attributes, I left them as tags to be indexed.</p>
+
+
+
+<p>&#8211; Line 3: These csv headers came direct from the speedtest cli output</p>
+
+
+
+<p>With the annotation complete, the data is ready to send. To run it, I created a simple shell script to capture the annotations, run the speedtest, and send the full output through standard in to the influx command like so:</p>
+
+
+
+<p>&#8220;`bash</p>
+
+
+
+<p>#!/bin/sh</p>
+
+
+
+<p># define annotation headers</p>
+
+
+
+<p>a0=&#8221;#constant measurement,speed&#8221;</p>
+
+
+
+<p>a1=&#8221;#datatype tag,tag,double,double,double,long,long,long,long,tag,long,double,double,double,double,double,double,double,double,double,double&#8221;</p>
+
+
+
+<p>a2='&#8221;server name&#8221;,&#8221;server id&#8221;,&#8221;idle latency&#8221;,&#8221;idle jitter&#8221;,&#8221;packet loss&#8221;,&#8221;download&#8221;,&#8221;upload&#8221;,&#8221;download bytes&#8221;,&#8221;upload bytes&#8221;,&#8221;share url&#8221;,&#8221;download server count&#8221;,&#8221;download latency&#8221;,&#8221;download latency jitter&#8221;,&#8221;download latency low&#8221;,&#8221;download latency high&#8221;,&#8221;upload latency&#8221;,&#8221;upload latency jitter&#8221;,&#8221;upload latency low&#8221;,&#8221;upload latency high&#8221;,&#8221;idle latency low&#8221;,&#8221;idle latency high&#8221;&#8216;</p>
+
+
+
+<p># run speedtest</p>
+
+
+
+<p>m=$(/root/speedtest -f csv 2&gt;&amp;1)</p>
+
+
+
+<p># echo to influxdb</p>
+
+
+
+<p>echo -e $a0&#8243;\n&#8221;$a1&#8243;\n&#8221;$a2&#8243;\n&#8221;$m | /root/influx write &#8211;bucket speedtest &#8211;format csv &#8211;</p>
+
+
+
+<p>&#8220;`</p>
+
+
+
+<p>Finally, to automate the process, I added the following hourly cron job to OpenWrt to run the shell script, and restarted cron to apply:</p>
+
+
+
+<p>&#8220;`bash</p>
+
+
+
+<p>0 * * * * /root/speedtest_influx.sh</p>
+
+
+
+<p>&#8220;`</p>
+
+
+
+<p>After taking some time to let the data populate, I created a simple dashboard to show various speed stats &#8211; showing the latest download &amp; upload in a dial, and chart the speeds over time. The result looks like so:</p>
+
+
+
+<p>![dashboard](/assets/img/speedtest-dashboard.png)</p>
+
+
+
+<p>From here, there are many additional enhancements that could be implemented, such as custom alerting upon a certain threshold, or a dead man hook to alert on absence of ingest. For now &#8211; I will leave it simply, and just monitor the speed data over time. I do plan to implement additional monitoring capability here when I get to it &#8211; perhaps integrate into my existing LibreNMS stack, Healthchecks.io, or capture some logs to my Grafana Cloud instance. As it stands, I’m pretty satisfied to be able these metrics with just two single binaries and a cron job.</p>
+
+
+
+<p>For more details on the project &amp; script artifacts, please visit my git repo here:</p>
+
+
+
+<p>[https://github.com/zarguell/influxdb-speedtest](https://github.com/zarguell/influxdb-speedtest)</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+	</channel>
+</rss>

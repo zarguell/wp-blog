@@ -1,0 +1,561 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>homelab &#8211; Random Thoughts</title>
+	<atom:link href="/tag/homelab/feed/" rel="self" type="application/rss+xml" />
+	<link>/</link>
+	<description></description>
+	<lastBuildDate>Thu, 26 Jan 2023 03:03:08 +0000</lastBuildDate>
+	<language>en-US</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.1.1</generator>
+
+<image>
+	<url>/wp-content/uploads/2023/01/cropped-android-chrome-512x512-1-32x32.png</url>
+	<title>homelab &#8211; Random Thoughts</title>
+	<link>/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>Monitoring Speedtest Results through InfluxDB on OpenWrt</title>
+		<link>/2022/11/24/monitoring-speedtest-results-through-influxdb-on-openwrt/</link>
+		
+		<dc:creator><![CDATA[zach]]></dc:creator>
+		<pubDate>Thu, 24 Nov 2022 03:01:00 +0000</pubDate>
+				<category><![CDATA[selfhosted]]></category>
+		<category><![CDATA[homelab]]></category>
+		<category><![CDATA[influxdb]]></category>
+		<category><![CDATA[monitoring]]></category>
+		<category><![CDATA[openwrt]]></category>
+		<category><![CDATA[speedtest]]></category>
+		<guid isPermaLink="false">/?p=10</guid>
+
+					<description><![CDATA[# Intro 💡 This Thanksgiving, I was at my Mom’s and wanted to tackle a lightweight monitoring solution for tracking various Speedtest.net metrics. Having recently moved and changed ISPs &#8211; she had experienced particular issues in having multiple outages on a daily basis, throughput issues, and the like. To help with this, the first thing [&#8230;]]]></description>
+										<content:encoded><![CDATA[
+<p><strong># Intro <img src="https://s.w.org/images/core/emoji/14.0.0/72x72/1f4a1.png" alt="💡" class="wp-smiley" style="height: 1em; max-height: 1em;" /></strong></p>
+
+
+
+<p>This Thanksgiving, I was at my Mom’s and wanted to tackle a lightweight monitoring solution for tracking various Speedtest.net metrics. Having recently moved and changed ISPs &#8211; she had experienced particular issues in having multiple outages on a daily basis, throughput issues, and the like.</p>
+
+
+
+<p>To help with this, the first thing I did was configure a Raspberry Pi Compute Module 4 with the DFRobot IOT Router Board to act as router, gateway, firewall, dns, etc &#8211; and just move her consumer Orbi to just Access Point mode. This is a great little board perfect for lightweight routing &#8211; Jeff Geerling has a [great write up on the board](https://www.jeffgeerling.com/blog/2021/two-tiny-dual-gigabit-raspberry-pi-cm4-routers) and I would highly recommend replacing your off-the-shelf router with one if you can get your hands on a Compute Module board.</p>
+
+
+
+<p>On top of this, I wanted a keep-it-simple-stupid monitoring solution: one that’s lightweight, not full of countless dependencies, as deploying it as my Mom’s, I would prefer a “set and forget” solution rather than one requiring constant maintenance (I’m extremely paranoid to the point of a failed SD card rendering the box non-functional &#8211; so I really don’t want a lot running on the box).</p>
+
+
+
+<p>InfluxDB Cloud has a great free tier that can maintain logs for 30 days that’s perfect for these small use cases. This is ideal, not having to host my own dedicated InfluxDB stack just for monitoring &#8211; I can just scrape and send a few metrics from the box.</p>
+
+
+
+<p><strong># Speedtest CLI Configuration <img src="https://s.w.org/images/core/emoji/14.0.0/72x72/1f684.png" alt="🚄" class="wp-smiley" style="height: 1em; max-height: 1em;" /></strong></p>
+
+
+
+<p>Speedtest CLI now has precompiled binaries that are statically linked, and can be run on OpenWrt out of the box &#8211; so this is much more ideal than running the Python based CLI, which is less performant and requires a whole stack of dependencies. And luckily, it’s compiled for aarch64, so it works perfectly with the Raspberry Pi Compute Module 4 (luckily, because unfortunately Speedtest has some “secret sauce”, and cannot open source the tool for your own compilation).</p>
+
+
+
+<p>Installation is straightforward, download the tarball from Speedtest and untar. I just leave it in /root as I persist this directory for Openwrt &#8211; but it can also be added to standard /bin directories:</p>
+
+
+
+<p>&#8220;`bash</p>
+
+
+
+<p>wget https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-linux-aarch64.tgz</p>
+
+
+
+<p>tar xvzf ookla-speedtest-1.2.0-linux-aarch64.tgz</p>
+
+
+
+<p>&#8220;`</p>
+
+
+
+<p>Once you have the binary, run the Speedtest CLI and follow the prompts:</p>
+
+
+
+<p>&#8220;`bash</p>
+
+
+
+<p>./speedtest</p>
+
+
+
+<p>==============================================================================</p>
+
+
+
+<p>You may only use this Speedtest software and information generated</p>
+
+
+
+<p>from it for personal, non-commercial use, through a command line</p>
+
+
+
+<p>interface on a personal computer. Your use of this software is subject</p>
+
+
+
+<p>to the End User License Agreement, Terms of Use and Privacy Policy at</p>
+
+
+
+<p>these URLs:</p>
+
+
+
+<p><a href="https://www.speedtest.net/about/eula">https://www.speedtest.net/about/eula</a></p>
+
+
+
+<p><a href="https://www.speedtest.net/about/terms">https://www.speedtest.net/about/terms</a></p>
+
+
+
+<p><a href="https://www.speedtest.net/about/privacy">https://www.speedtest.net/about/privacy</a></p>
+
+
+
+<p>==============================================================================</p>
+
+
+
+<p>Do you accept the license? [type YES to accept]: YES</p>
+
+
+
+<p>&#8220;`</p>
+
+
+
+<p>First usage of the tool will require you to interactively accept the EULA &#8211; after that, the record is stored in your user profile and the CLI can be run without interaction.</p>
+
+
+
+<p>To run the tool, I decided to use the .csv output format, because it is extremely easy to parse into InfluxDB, which I will dive into:</p>
+
+
+
+<p>&#8220;`bash</p>
+
+
+
+<p>./speedtest -f csv</p>
+
+
+
+<p>&#8220;`</p>
+
+
+
+<p><strong># InfluxDB Implementation <img src="https://s.w.org/images/core/emoji/14.0.0/72x72/1f4c8.png" alt="📈" class="wp-smiley" style="height: 1em; max-height: 1em;" /></strong></p>
+
+
+
+<p>Similarly to Speedtest, InfluxDB can also be installed as a single binary. For the Compute Module 4, grab the arm64 binary, and also untar just the same:</p>
+
+
+
+<p>&#8220;`bash</p>
+
+
+
+<p>wget https://dl.influxdata.com/influxdb/releases/influxdb2-client-2.5.0-linux-arm64.tar.gz</p>
+
+
+
+<p>tar xvzf influxdb2-client-2.5.0-linux-arm64.tar.gz</p>
+
+
+
+<p>&#8220;`</p>
+
+
+
+<p>Once you have the binary, you need to create an API token, and create a InfluxDB configuration. The easiest way to do this is walked through within the InfluxDB onboarding docs, which will do the work of creating an API token and providing the configuration command like so:</p>
+
+
+
+<p>&#8220;`bash</p>
+
+
+
+<p>./influx config create &#8211;config-name onboarding \</p>
+
+
+
+<p>&#8211;host-url &#8220;https://your-platform-url&/#8221; \</p>
+
+
+
+<p>&#8211;org &#8220;your-org&#8221; \</p>
+
+
+
+<p>&#8211;token &#8220;api-token&#8221; \</p>
+
+
+
+<p>&#8211;active</p>
+
+
+
+<p>&#8220;`</p>
+
+
+
+<p>Once you have configured the profile, you can verify the configuration by listing profiles:</p>
+
+
+
+<p>&#8220;`bash</p>
+
+
+
+<p>./influx config</p>
+
+
+
+<p>Active Name URL Org</p>
+
+
+
+<p>* onboarding https://your-platform-url/ your-org</p>
+
+
+
+<p>&#8220;`</p>
+
+
+
+<p>To collect data to InfluxDB, we will create a bucket called speedtest to send speedtest data to:</p>
+
+
+
+<p>&#8220;`bash</p>
+
+
+
+<p>influx bucket create \</p>
+
+
+
+<p>&#8211;name speedtest \</p>
+
+
+
+<p>&#8211;description &#8220;OpenWrt Speedtest.net Bucket&#8221;</p>
+
+
+
+<p>&#8220;`</p>
+
+
+
+<p>With the bucket created, we can begin sending the csv data to the bucket. InfluxDB can utilize an annotated csv format in order to capture tags, measurements, and datatypes that should be indexed by InfluxDB.</p>
+
+
+
+<p>So, we need to figure out how the Speedtest csv data should be annotated to properly index. To get this, I ran the csv output with header information, and mapped each field to the InfluxDB data types as so:</p>
+
+
+
+<p>&#8220;`</p>
+
+
+
+<p>#constant measurement,speed</p>
+
+
+
+<p>#datatype tag,tag,double,double,double,long,long,long,long,tag,long,double,double,double,double,double,double,double,double,double,double</p>
+
+
+
+<p>&#8220;server name&#8221;,&#8221;server id&#8221;,&#8221;idle latency&#8221;,&#8221;idle jitter&#8221;,&#8221;packet loss&#8221;,&#8221;download&#8221;,&#8221;upload&#8221;,&#8221;download bytes&#8221;,&#8221;upload bytes&#8221;,&#8221;share url&#8221;,&#8221;download server count&#8221;,&#8221;download latency&#8221;,&#8221;download latency jitter&#8221;,&#8221;download latency low&#8221;,&#8221;download latency high&#8221;,&#8221;upload latency&#8221;,&#8221;upload latency jitter&#8221;,&#8221;upload latency low&#8221;,&#8221;upload latency high&#8221;,&#8221;idle latency low&#8221;,&#8221;idle latency high&#8221;</p>
+
+
+
+<p>&#8220;`</p>
+
+
+
+<p>The secret sauce here is basically:</p>
+
+
+
+<p>&#8211; Line 1: Set a constant measurement for all data to be called speed</p>
+
+
+
+<p>&#8211; Line 2: Define each csv column header as the data type (longs and doubles where decimal). For the server related attributes, I left them as tags to be indexed.</p>
+
+
+
+<p>&#8211; Line 3: These csv headers came direct from the speedtest cli output</p>
+
+
+
+<p>With the annotation complete, the data is ready to send. To run it, I created a simple shell script to capture the annotations, run the speedtest, and send the full output through standard in to the influx command like so:</p>
+
+
+
+<p>&#8220;`bash</p>
+
+
+
+<p>#!/bin/sh</p>
+
+
+
+<p># define annotation headers</p>
+
+
+
+<p>a0=&#8221;#constant measurement,speed&#8221;</p>
+
+
+
+<p>a1=&#8221;#datatype tag,tag,double,double,double,long,long,long,long,tag,long,double,double,double,double,double,double,double,double,double,double&#8221;</p>
+
+
+
+<p>a2='&#8221;server name&#8221;,&#8221;server id&#8221;,&#8221;idle latency&#8221;,&#8221;idle jitter&#8221;,&#8221;packet loss&#8221;,&#8221;download&#8221;,&#8221;upload&#8221;,&#8221;download bytes&#8221;,&#8221;upload bytes&#8221;,&#8221;share url&#8221;,&#8221;download server count&#8221;,&#8221;download latency&#8221;,&#8221;download latency jitter&#8221;,&#8221;download latency low&#8221;,&#8221;download latency high&#8221;,&#8221;upload latency&#8221;,&#8221;upload latency jitter&#8221;,&#8221;upload latency low&#8221;,&#8221;upload latency high&#8221;,&#8221;idle latency low&#8221;,&#8221;idle latency high&#8221;&#8216;</p>
+
+
+
+<p># run speedtest</p>
+
+
+
+<p>m=$(/root/speedtest -f csv 2&gt;&amp;1)</p>
+
+
+
+<p># echo to influxdb</p>
+
+
+
+<p>echo -e $a0&#8243;\n&#8221;$a1&#8243;\n&#8221;$a2&#8243;\n&#8221;$m | /root/influx write &#8211;bucket speedtest &#8211;format csv &#8211;</p>
+
+
+
+<p>&#8220;`</p>
+
+
+
+<p>Finally, to automate the process, I added the following hourly cron job to OpenWrt to run the shell script, and restarted cron to apply:</p>
+
+
+
+<p>&#8220;`bash</p>
+
+
+
+<p>0 * * * * /root/speedtest_influx.sh</p>
+
+
+
+<p>&#8220;`</p>
+
+
+
+<p>After taking some time to let the data populate, I created a simple dashboard to show various speed stats &#8211; showing the latest download &amp; upload in a dial, and chart the speeds over time. The result looks like so:</p>
+
+
+
+<p>![dashboard](/assets/img/speedtest-dashboard.png)</p>
+
+
+
+<p>From here, there are many additional enhancements that could be implemented, such as custom alerting upon a certain threshold, or a dead man hook to alert on absence of ingest. For now &#8211; I will leave it simply, and just monitor the speed data over time. I do plan to implement additional monitoring capability here when I get to it &#8211; perhaps integrate into my existing LibreNMS stack, Healthchecks.io, or capture some logs to my Grafana Cloud instance. As it stands, I’m pretty satisfied to be able these metrics with just two single binaries and a cron job.</p>
+
+
+
+<p>For more details on the project &amp; script artifacts, please visit my git repo here:</p>
+
+
+
+<p>[https://github.com/zarguell/influxdb-speedtest](https://github.com/zarguell/influxdb-speedtest)</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>ZTNA to Services Through Cloudflare</title>
+		<link>/2022/09/26/ztna-to-services-through-cloudflare/</link>
+		
+		<dc:creator><![CDATA[zach]]></dc:creator>
+		<pubDate>Mon, 26 Sep 2022 02:59:00 +0000</pubDate>
+				<category><![CDATA[selfhosted]]></category>
+		<category><![CDATA[cloudflare]]></category>
+		<category><![CDATA[homelab]]></category>
+		<category><![CDATA[sase]]></category>
+		<category><![CDATA[trust]]></category>
+		<category><![CDATA[warp]]></category>
+		<category><![CDATA[zero]]></category>
+		<category><![CDATA[ztna]]></category>
+		<guid isPermaLink="false">/?p=7</guid>
+
+					<description><![CDATA[## Overview 🔍 If vendor marketing is any indication, &#8220;Zero Trust&#8221; is the biggest buzzword in security lately. But not without reason; a well implemented security architecture with strong identity verification and zero trust principles is the foundation of good security today. It&#8217;s amsuing to me how many breaches in the past few months reported [&#8230;]]]></description>
+										<content:encoded><![CDATA[
+<p><strong>## Overview <img src="https://s.w.org/images/core/emoji/14.0.0/72x72/1f50d.png" alt="🔍" class="wp-smiley" style="height: 1em; max-height: 1em;" /></strong></p>
+
+
+
+<p>If vendor marketing is any indication, &#8220;Zero Trust&#8221; is the biggest buzzword in security lately. But not without reason; a well implemented security architecture with strong identity verification and zero trust principles is the foundation of good security today. It&#8217;s amsuing to me how many breaches in the past few months reported in the news have had the same things; valid account, compromise of phishable 2-factor credentials, compromise of enterprise VPN, establish foothold, move laterally.</p>
+
+
+
+<p>As Cloudflare tags their practice of [&#8220;dogfooding&#8221;](https://blog.cloudflare.com/dogfooding-from-home/) Cloudflare Access, for me &#8220;dogfooding&#8221; is using Cloudflare Acccess to adopt a zero trust approach to my self hosted services. For a while, I have been using Cloudflare Tunnels (formerly known as Argo Tunnels) with identity providers as sort-of a &#8220;front line&#8221; identity verification to services. This is cool and all, but it doesn&#8217;t fully automate the identification process, and breaks a lot of &#8220;app&#8221; functionality. For example, built in functionality of Home Assistant or Bitwarden breaks, due to Cloudflare access prompting for authentication. Plus, it opens the door to a further enhanced security model (device posture checks, malware inspection, step up authentication, and more).</p>
+
+
+
+<p>In this post, I&#8217;ll assume you already have [Cloudflare for Teams](https://blog.cloudflare.com/introducing-cloudflare-for-teams/), with apps configured with public hostnames configured via Cloudflare Tunnels (and perhaps some policies to govern access already). What I want to highlight is the addition of &#8220;gateway&#8221; access by configuration of managed devices within a team/organization through the &#8220;Warp&#8221; client.</p>
+
+
+
+<p><strong>## Initial Setup <img src="https://s.w.org/images/core/emoji/14.0.0/72x72/1f477.png" alt="👷" class="wp-smiley" style="height: 1em; max-height: 1em;" /></strong></p>
+
+
+
+<p>In order to confgiure apps for ZTNA access through the Warp client, you will need clients to utilize Cloudflare&#8217;s Secure Web Gateway (SWG). For more information on developing Gateway Policies, see the [Cloudflare Docs](https://developers.cloudflare.com/cloudflare-one/policies/filtering/).</p>
+
+
+
+<p>The important part here is not necessarily on what Gateway Policies you implement, but that the Cloudflare SWG must be able to inspect HTTP traffic (ie, DNS inspection through forwarding from a defined location is NOT engough), which [requires the WARP client, with trusted certificate](https://developers.cloudflare.com/cloudflare-one/policies/filtering/initial-setup/http/).</p>
+
+
+
+<p>Prior to enrolling device, I would recommend configuring a basic device enrollment policy for the WARP client. This is found under &#8220;`Settings -&gt; WARP Client -&gt; Device Enrollment Permissions&#8220;`</p>
+
+
+
+<p>Similar to access policies, the enrollment policy defines what devices can enroll in your Cloudflare team. Below is a &#8220;family members&#8221; policy for which I included a list of list of authorized family member emails. In an enterprise scenario, this could be something more aligned to organization policies, such as &#8220;allow all *@acme.organization.com.&#8221;</p>
+
+
+
+<p>![device-policy](/assets/img/device-enrollment-policy.png)</p>
+
+
+
+<p>You will also want to configure a device posture check under &#8220;`Settings -&gt; WARP Client -&gt; Device Posture&#8220;`. For my scenario, I have configured the [&#8220;Require Gateway&#8221;](https://developers.cloudflare.com/cloudflare-one/identity/devices/warp-client-checks/require-gateway/) check. Per Cloudflare, &#8220;Require Gateway will only allow requests coming from devices whose traffic is filtered by your organization’s Cloudflare Gateway configuration. This policy is best used when you want to protect company-owned assets by only allowing access to employees&#8221; &#8211; exactly what we desire to enable ZTNA.</p>
+
+
+
+<p>![device-posture](/assets/img/device-posture.png)</p>
+
+
+
+<p>Note that device posture checks open up a door to enhance security; allowing more granular access to services based on risk, including enforcing a certain (up-to-date) OS version, precense of security controls, and more.</p>
+
+
+
+<p><strong>## Certificate Trust <img src="https://s.w.org/images/core/emoji/14.0.0/72x72/1f91d.png" alt="🤝" class="wp-smiley" style="height: 1em; max-height: 1em;" /></strong></p>
+
+
+
+<p>Next in the setup process, you will need to add the Cloudflare for Teams certificate as a trusted root certificate in the device you are enrolling for access. Cloudflare provides standard .crt and .pem files in the docs linked [here](https://developers.cloudflare.com/cloudflare-one/connections/connect-devices/warp/install-cloudflare-cert), and should be installed as instructed per device vendor.</p>
+
+
+
+<p>Installation of this certificate is necessary to allow for HTTP inspection. Platforms such as Android may provide warning that installation of a certificate will allow third parties to view private data sent to websites. This is true &#8211; Cloudflare SWG, when performing HTTP inspection, is an &#8220;adversary-in-the-middle&#8221; for all HTTP requests on the client. In our scenario, this is desirable, as it is only through HTTP inspection that we can direct apps to private gateway access, as well as enforce DLP controls, malware inspection, lockdown allowed tenants, and more.</p>
+
+
+
+<p><strong>## Certificate Pinning <img src="https://s.w.org/images/core/emoji/14.0.0/72x72/1f4cc.png" alt="📌" class="wp-smiley" style="height: 1em; max-height: 1em;" /></strong></p>
+
+
+
+<p>For those familiar with TLS interception, whether through transparent proxy, or SWG platform &#8211; these issues are nothing new. But I believe it is worth pointing on the &#8220;issue&#8221; that TLS interception, and the introduction of &#8220;adversary-in-the-middle&#8221; has on various services, particularly client applications.</p>
+
+
+
+<p>One of the biggest hurdles to properly implementing TLS/HTTP inspection across the board is the wide usage of certificate pinning through various vendors. For large detail on the pros/cons of certificate pinning, I recommend checking out this [Digicert article](https://www.digicert.com/blog/certificate-pinning-what-is-certificate-pinning) on the topic &#8211; but the TLDR for this scenario is that certificate pinned applictaions indicate a scenario in which, in some shape or form, an application developer has forced their app to be &#8220;pinned&#8221; to a particular certificate of theirs. When using WARP gateway, or any TLS interception scenario, the previously trusted certificate inspecting the traffic will be presented. This will completely break app functionality, as the backend will be met with &#8220;certificate not trusted&#8221;, or similar errors. Even though the intercepting certificate is trusted at the system level, the certificate pinning of the app ignores this trust.</p>
+
+
+
+<p>Luckily, Cloudflare provides a simple &#8220;one-click&#8221; button. When onboarding on Teams, the first &#8220;create HTTP&#8221; policy that is pre-templated is a &#8220;certificate pinning&#8221; policy (pictured below).</p>
+
+
+
+<p>![cert-pinning](/assets/img/cert-pinning.png)</p>
+
+
+
+<p>The policy defines a list of applications correlating to domains known to cause issue with cert pinning, and defines a policy to bypass, or not inspect the traffic. Implementing this HTTP policy will resolve most common certificate pinning issues. I saw most &#8211; because it is not an end-to-end list. As you utilizing the gateway &#8211; you will notice normal traffic breaking, often due to certificate pinning. By observing logs and testing bypass of domains, you can walkthrough and remediate some of these issues.</p>
+
+
+
+<p><strong>## Device Enrollment <img src="https://s.w.org/images/core/emoji/14.0.0/72x72/1f4f1.png" alt="📱" class="wp-smiley" style="height: 1em; max-height: 1em;" /></strong></p>
+
+
+
+<p>Now that you&#8217;ve trusted the Cloudflare teams certificate, and understand and have bypassed the requisite apps for certificate pinning, you are ready to enroll the client and begin passing HTTP traffic through Cloudflare gateway.</p>
+
+
+
+<p>For small homelab usage, I&#8217;m going to assume you&#8217;re running manual deployments of the WARP client (although instructions for deploying via Intune, JAMF, etc exist. And I would love to develop a procedure for managed deployment of an organization WARP client through JumpCloud free tier&#8230; but that is a topic for another post&#8230;)</p>
+
+
+
+<p>The Cloudflare Docs for [manual installation](https://developers.cloudflare.com/cloudflare-one/connections/connect-devices/warp/deployment/manual-deployment/) describe the process; either CLI or GUI based per platform. Ultimately, the WARP client will need to be configured to use the &#8220;Cloudflare for Teams&#8221; login, and you will authenticate to meet the defined device enrollment criteria via configured identity providers, and be granted access to the Cloudflare team via WARP.</p>
+
+
+
+<p><strong>## Policy Configuration <img src="https://s.w.org/images/core/emoji/14.0.0/72x72/1f942.png" alt="🥂" class="wp-smiley" style="height: 1em; max-height: 1em;" /></strong></p>
+
+
+
+<p>So you have your device enrolled, and you&#8217;re inspecting HTTP traffic through the gateway. The final step is enable the &#8220;requirement&#8221; of the gateway to an access application, and use that as a condition to bypass authentication.</p>
+
+
+
+<p>For this scenario, I have added a policy &#8220;bypass authentication through gateway&#8221; for my bitwarden (vaultwarden) Access application.</p>
+
+
+
+<p>![bitwarden-bypass](/assets/img/bitwarden-bypass.png)</p>
+
+
+
+<p>Within the policy, the only condition I have is the &#8220;require gateway&#8221;, which was defined under WARP Client device posture checks in the initial setup. Again, depending on risk level, additional device posture checks could be enforced as need, so that even a &#8220;managed&#8221; device could be denied access to bitwarden if not up to patching, missing antivirus, etc.</p>
+
+
+
+<p>![require-gateway](/assets/img/require-gateway.png)</p>
+
+
+
+<p>After saving the policy &#8211; try testing out access. For the Bitwarden scenario, I changed my hostname from an internal DNS name to my public access domain (previously behind an authentication layer). Now, I can sync the Bitwarden app whenever, creating a software defined perimter for access to any of my self hosted services!</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+	</channel>
+</rss>
